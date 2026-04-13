@@ -849,6 +849,20 @@ body::before {
   border-radius: 2px;
   letter-spacing: 0.08em;
 }
+.course-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.course-link:hover .cpc-title { color: var(--gold2); }
+.course-link:hover .cp-course { background: var(--s3); border-color: var(--b3); }
+.link-icon {
+  font-size: 8px;
+  opacity: 0.5;
+  margin-left: 3px;
+  transition: opacity 0.2s;
+}
+.course-link:hover .link-icon { opacity: 1; color: var(--gold2); }
 
 /* ── OUTCOMES ── */
 .outcomes-grid {
@@ -1290,29 +1304,39 @@ body::before {
       <div class="cp-badge badge-access">✓ YOU HAVE ACCESS</div>
       <ul class="cp-courses">
         <li class="cp-course">
-          <div class="cpc-title">Introduction to LLMs in Python</div>
-          <div class="cpc-week">Week 1 · Foundation</div>
-          <div class="cpc-status badge-active">→ START HERE</div>
+          <a href="https://www.datacamp.com/courses/introduction-to-llms-in-python" target="_blank" class="course-link">
+            <div class="cpc-title">Introduction to LLMs in Python <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 1 · Foundation</div>
+            <div class="cpc-status badge-active">→ START HERE</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">Working with Vector Databases</div>
-          <div class="cpc-week">Week 3 · Foundation</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.datacamp.com/courses/introduction-to-vector-databases-with-pinecone" target="_blank" class="course-link">
+            <div class="cpc-title">Working with Vector Databases <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 3 · Foundation</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">Developing LLM Apps with LangChain</div>
-          <div class="cpc-week">Week 5 · Intermediate</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.datacamp.com/courses/developing-llm-applications-with-langchain" target="_blank" class="course-link">
+            <div class="cpc-title">Developing LLM Apps with LangChain <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 5 · Intermediate</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">Multi-AI Agent Systems with CrewAI</div>
-          <div class="cpc-week">Week 7 · Intermediate</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.datacamp.com/courses/multi-ai-agent-systems-with-crewai" target="_blank" class="course-link">
+            <div class="cpc-title">Multi-AI Agent Systems with CrewAI <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 7 · Intermediate</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">Building Chatbots with OpenAI + Streamlit</div>
-          <div class="cpc-week">Week 9 · Portfolio</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.datacamp.com/courses/building-chatbots-with-the-openai-api" target="_blank" class="course-link">
+            <div class="cpc-title">Building Chatbots with OpenAI + Streamlit <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 9 · Portfolio</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
       </ul>
     </div>
@@ -1322,24 +1346,32 @@ body::before {
       <div class="cp-badge badge-access">✓ YOU HAVE ACCESS</div>
       <ul class="cp-courses">
         <li class="cp-course">
-          <div class="cpc-title">Prompt Engineering for ChatGPT (Vanderbilt)</div>
-          <div class="cpc-week">Week 2 · Foundation</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.coursera.org/learn/prompt-engineering" target="_blank" class="course-link">
+            <div class="cpc-title">Prompt Engineering for ChatGPT (Vanderbilt) <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 2 · Foundation</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">Generative AI with LLMs (DeepLearning.AI + AWS)</div>
-          <div class="cpc-week">Week 4 · Foundation</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.coursera.org/learn/generative-ai-with-llms" target="_blank" class="course-link">
+            <div class="cpc-title">Generative AI with LLMs (DeepLearning.AI + AWS) <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 4 · Foundation</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">AI Agents in LangGraph (DeepLearning.AI)</div>
-          <div class="cpc-week">Week 6 · Intermediate</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.coursera.org/learn/ai-agents-in-langgraph" target="_blank" class="course-link">
+            <div class="cpc-title">AI Agents in LangGraph (DeepLearning.AI) <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 6 · Intermediate</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">Generative AI System Design (IBM)</div>
-          <div class="cpc-week">Week 11 · Portfolio</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://www.coursera.org/learn/generative-ai-system-design" target="_blank" class="course-link">
+            <div class="cpc-title">Generative AI System Design (IBM) <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 11 · Portfolio</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
       </ul>
     </div>
@@ -1349,19 +1381,46 @@ body::before {
       <div class="cp-badge badge-free">✓ FREE ACCESS</div>
       <ul class="cp-courses">
         <li class="cp-course">
-          <div class="cpc-title">Building + Evaluating Advanced RAG</div>
-          <div class="cpc-week">Week 8 · DeepLearning.AI Short Course</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://learn.deeplearning.ai/courses/building-evaluating-advanced-rag" target="_blank" class="course-link">
+            <div class="cpc-title">Building + Evaluating Advanced RAG <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 8 · DeepLearning.AI Short Course</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">LangChain Documentation + Tutorials</div>
-          <div class="cpc-week">Ongoing reference · docs.langchain.com</div>
-          <div class="cpc-status" style="background:rgba(255,255,255,0.05);color:var(--t2);border:1px solid var(--b)">ALWAYS OPEN</div>
+          <a href="https://python.langchain.com/docs/introduction/" target="_blank" class="course-link">
+            <div class="cpc-title">LangChain Documentation + Tutorials <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Ongoing · docs.langchain.com</div>
+            <div class="cpc-status" style="background:rgba(255,255,255,0.05);color:var(--t2);border:1px solid var(--b)">ALWAYS OPEN</div>
+          </a>
         </li>
         <li class="cp-course">
-          <div class="cpc-title">CrewAI + LangGraph GitHub Repos</div>
-          <div class="cpc-week">Weeks 6-7 · Source code & examples</div>
-          <div class="cpc-status badge-locked">LOCKED</div>
+          <a href="https://github.com/crewAIInc/crewAI" target="_blank" class="course-link">
+            <div class="cpc-title">CrewAI GitHub Repo <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 7 · Source code & examples</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
+        </li>
+        <li class="cp-course">
+          <a href="https://github.com/langchain-ai/langgraph" target="_blank" class="course-link">
+            <div class="cpc-title">LangGraph GitHub Repo <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 6 · Source code & examples</div>
+            <div class="cpc-status badge-locked">LOCKED</div>
+          </a>
+        </li>
+        <li class="cp-course">
+          <a href="https://bbycroft.net/llm" target="_blank" class="course-link">
+            <div class="cpc-title">LLM Visualizer — bbycroft.net <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Week 1 onwards · Conceptual reference</div>
+            <div class="cpc-status" style="background:rgba(255,255,255,0.05);color:var(--t2);border:1px solid var(--b)">ALWAYS OPEN</div>
+          </a>
+        </li>
+        <li class="cp-course">
+          <a href="https://seeing-theory.brown.edu" target="_blank" class="course-link">
+            <div class="cpc-title">Seeing Theory — Brown University <span class="link-icon">↗</span></div>
+            <div class="cpc-week">Weeks 3-4 · Probability & stats visuals</div>
+            <div class="cpc-status" style="background:rgba(255,255,255,0.05);color:var(--t2);border:1px solid var(--b)">ALWAYS OPEN</div>
+          </a>
         </li>
       </ul>
     </div>
