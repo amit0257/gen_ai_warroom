@@ -1,0 +1,1776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GENAI WAR ROOM · AMIT PANDIT</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+:root {
+  --bg: #080a0e;
+  --s1: #0d0f14;
+  --s2: #111318;
+  --s3: #161820;
+  --b: rgba(255,255,255,0.06);
+  --b2: rgba(255,255,255,0.04);
+  --b3: rgba(255,255,255,0.1);
+  --t1: rgba(255,255,255,0.85);
+  --t2: rgba(255,255,255,0.45);
+  --t3: rgba(255,255,255,0.25);
+  --gold: #d4a843;
+  --gold2: #f0c060;
+  --gold3: rgba(212,168,67,0.15);
+  --cyan: #00d4ff;
+  --cyan2: rgba(0,212,255,0.12);
+  --green: #2ecc71;
+  --green2: rgba(46,204,113,0.12);
+  --orange: #e67e22;
+  --orange2: rgba(230,126,34,0.12);
+  --red: #e74c3c;
+  --red2: rgba(231,76,60,0.12);
+  --purple: #9b59b6;
+  --mono: 'Space Mono', monospace;
+  --head: 'Bebas Neue', sans-serif;
+  --body: 'DM Sans', sans-serif;
+}
+
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body {
+  background: var(--bg);
+  color: var(--t1);
+  font-family: var(--body);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCANLINE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* ── TOP BAR ── */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: rgba(8,10,14,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--b3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 24px;
+  height: 48px;
+}
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.topbar-logo {
+  font-family: var(--head);
+  font-size: 22px;
+  letter-spacing: 3px;
+  color: var(--gold2);
+  line-height: 1;
+}
+.topbar-sep { color: var(--t3); font-family: var(--mono); font-size: 10px; }
+.topbar-sub {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--t2);
+  letter-spacing: 0.15em;
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.status-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.85)} }
+.status-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--green);
+  letter-spacing: 0.12em;
+}
+.overall-badge {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 2px;
+  border: 1px solid rgba(212,168,67,0.4);
+  background: var(--gold3);
+  color: var(--gold2);
+  letter-spacing: 0.08em;
+}
+
+/* ── NAV TABS ── */
+.nav {
+  display: flex;
+  background: var(--s1);
+  border-bottom: 1px solid var(--b);
+  overflow-x: auto;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-tab {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--t2);
+  padding: 12px 20px;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.2s;
+  border-right: 1px solid var(--b2);
+}
+.nav-tab:hover { color: var(--t1); background: var(--s2); }
+.nav-tab.active { color: var(--gold2); border-bottom-color: var(--gold); background: var(--s2); }
+
+/* ── PANELS ── */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 48px 24px 40px;
+  border-bottom: 1px solid var(--b);
+  background: linear-gradient(180deg, rgba(212,168,67,0.04) 0%, transparent 100%);
+  overflow: hidden;
+  text-align: center;
+}
+.hero::before {
+  content: 'GENAI';
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--head);
+  font-size: 200px;
+  font-weight: 900;
+  color: rgba(212,168,67,0.025);
+  pointer-events: none;
+  letter-spacing: 20px;
+  white-space: nowrap;
+}
+.hero-eyebrow {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.3em;
+  margin-bottom: 16px;
+  position: relative;
+}
+.hero-title {
+  font-family: var(--head);
+  font-size: clamp(48px, 8vw, 96px);
+  letter-spacing: 4px;
+  color: var(--t1);
+  line-height: 1;
+  position: relative;
+  margin-bottom: 12px;
+}
+.hero-title span { color: var(--gold2); }
+.hero-sub {
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--t2);
+  letter-spacing: 0.2em;
+  position: relative;
+  margin-bottom: 28px;
+}
+.hero-stats {
+  display: flex;
+  justify-content: center;
+  gap: 0;
+  border: 1px solid var(--b3);
+  display: inline-flex;
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.hero-stat {
+  padding: 14px 24px;
+  text-align: center;
+  border-right: 1px solid var(--b3);
+}
+.hero-stat:last-child { border-right: none; }
+.hero-stat-num {
+  font-family: var(--head);
+  font-size: 32px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.hero-stat-lbl {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.12em;
+  margin-top: 4px;
+}
+.c-gold { color: var(--gold2); }
+.c-cyan { color: var(--cyan); }
+.c-green { color: var(--green); }
+.c-orange { color: var(--orange); }
+
+/* ── SECTION HEADER ── */
+.sec-hdr {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 24px;
+  background: var(--s1);
+  border-bottom: 1px solid var(--b);
+}
+.sec-hdr-title {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.22em;
+}
+.sec-hdr-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, var(--b3), transparent);
+}
+
+/* ── PROGRESS OVERVIEW ── */
+.progress-overview {
+  padding: 24px;
+  border-bottom: 1px solid var(--b);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--b);
+}
+.po-card {
+  background: var(--s1);
+  padding: 20px;
+}
+.po-phase {
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-bottom: 6px;
+}
+.po-phase-name {
+  font-family: var(--head);
+  font-size: 22px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.po-weeks {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.1em;
+  margin-bottom: 14px;
+}
+.po-bar-wrap {
+  height: 3px;
+  background: var(--b3);
+  border-radius: 2px;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+.po-bar {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+.po-pct {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.08em;
+}
+.phase1 .po-phase { color: var(--cyan); }
+.phase1 .po-phase-name { color: var(--cyan); }
+.phase1 .po-bar { background: var(--cyan); }
+.phase2 .po-phase { color: var(--gold2); }
+.phase2 .po-phase-name { color: var(--gold2); }
+.phase2 .po-bar { background: var(--gold2); }
+.phase3 .po-phase { color: var(--green); }
+.phase3 .po-phase-name { color: var(--green); }
+.phase3 .po-bar { background: var(--green); }
+
+/* ── WEEK GRID ── */
+.week-grid {
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  border-bottom: 1px solid var(--b);
+}
+.week-card {
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 3px;
+  padding: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.week-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.week-card:hover { background: var(--s3); border-color: var(--b3); }
+.week-card:hover::before { opacity: 1; }
+.wk-phase1::before { background: var(--cyan); }
+.wk-phase2::before { background: var(--gold); }
+.wk-phase3::before { background: var(--green); }
+
+.week-card.status-done { border-color: rgba(46,204,113,0.3); }
+.week-card.status-done::before { opacity: 1; background: var(--green); }
+.week-card.status-active { border-color: rgba(212,168,67,0.4); animation: activePulse 2s ease-in-out infinite; }
+.week-card.status-active::before { opacity: 1; }
+@keyframes activePulse { 0%,100%{box-shadow:none} 50%{box-shadow:0 0 12px rgba(212,168,67,0.2)} }
+
+.wk-num {
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.wk-status-badge {
+  font-size: 6px;
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+}
+.badge-done { background: rgba(46,204,113,0.15); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+.badge-active { background: rgba(212,168,67,0.15); color: var(--gold2); border: 1px solid rgba(212,168,67,0.3); }
+.badge-locked { background: rgba(255,255,255,0.05); color: var(--t3); border: 1px solid var(--b); }
+.badge-ready { background: rgba(0,212,255,0.1); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+
+.wk-focus {
+  font-family: var(--head);
+  font-size: 16px;
+  letter-spacing: 1px;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.wk-build {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  line-height: 1.7;
+  letter-spacing: 0.03em;
+}
+.wk-deliverable {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 6px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 2px;
+  display: inline-block;
+  letter-spacing: 0.1em;
+}
+.del-phase1 { background: rgba(0,212,255,0.08); color: var(--cyan); border: 1px solid rgba(0,212,255,0.2); }
+.del-phase2 { background: var(--gold3); color: var(--gold2); border: 1px solid rgba(212,168,67,0.2); }
+.del-phase3 { background: var(--green2); color: var(--green); border: 1px solid rgba(46,204,113,0.2); }
+
+/* ── CURRENT WEEK DETAIL ── */
+.current-week {
+  margin: 20px 24px;
+  background: var(--s2);
+  border: 1px solid rgba(212,168,67,0.25);
+  border-radius: 3px;
+  overflow: hidden;
+  position: relative;
+}
+.current-week::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--cyan), transparent);
+}
+.cw-header {
+  padding: 16px 20px;
+  background: linear-gradient(90deg, rgba(212,168,67,0.08), transparent);
+  border-bottom: 1px solid var(--b);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.cw-header-left {}
+.cw-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.22em;
+  margin-bottom: 4px;
+}
+.cw-title {
+  font-family: var(--head);
+  font-size: 28px;
+  letter-spacing: 2px;
+  color: var(--t1);
+}
+.cw-badge {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  padding: 6px 14px;
+  background: var(--gold3);
+  border: 1px solid rgba(212,168,67,0.4);
+  border-radius: 2px;
+  color: var(--gold2);
+  letter-spacing: 0.1em;
+}
+.cw-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--b);
+}
+.cw-col {
+  background: var(--s2);
+  padding: 16px 18px;
+}
+.cw-col-title {
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  margin-bottom: 10px;
+  color: var(--t2);
+}
+.cw-col-body {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--t1);
+  line-height: 1.9;
+  letter-spacing: 0.02em;
+}
+.cw-col-body strong { color: var(--gold2); font-weight: 700; }
+
+/* ── CHECKLIST ── */
+.checklist { list-style: none; margin-top: 4px; }
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--t1);
+  line-height: 1.6;
+  cursor: pointer;
+  padding: 4px 6px;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+.checklist li:hover { background: var(--b2); }
+.checklist li.checked { color: var(--t3); text-decoration: line-through; }
+.check-box {
+  width: 12px; height: 12px;
+  border: 1px solid var(--b3);
+  border-radius: 2px;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px;
+  transition: all 0.15s;
+}
+.checklist li.checked .check-box {
+  background: var(--green);
+  border-color: var(--green);
+  color: #000;
+}
+
+/* ── LOG TAB ── */
+.log-wrap { padding: 20px 24px; }
+.log-form {
+  background: var(--s2);
+  border: 1px solid var(--b3);
+  border-radius: 3px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.log-form-title {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  color: var(--gold2);
+  letter-spacing: 0.2em;
+  margin-bottom: 14px;
+}
+.log-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.log-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.log-field label {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.12em;
+  font-weight: 700;
+}
+.log-input, .log-select, .log-textarea {
+  background: var(--s1);
+  border: 1px solid var(--b3);
+  border-radius: 2px;
+  color: var(--t1);
+  font-family: var(--mono);
+  font-size: 8px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.log-input:focus, .log-select:focus, .log-textarea:focus {
+  border-color: rgba(212,168,67,0.5);
+}
+.log-select option { background: var(--s1); }
+.log-textarea { width: 100%; resize: vertical; min-height: 64px; grid-column: 1/-1; }
+.log-btn {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 10px 20px;
+  background: var(--gold3);
+  border: 1px solid rgba(212,168,67,0.4);
+  color: var(--gold2);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.log-btn:hover { background: rgba(212,168,67,0.25); }
+
+.log-entries { display: flex; flex-direction: column; gap: 8px; }
+.log-entry {
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 3px;
+  padding: 14px 16px;
+  display: grid;
+  grid-template-columns: 80px 1fr auto;
+  gap: 14px;
+  align-items: start;
+  position: relative;
+  overflow: hidden;
+}
+.log-entry::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 2px;
+}
+.le-phase1::before { background: var(--cyan); }
+.le-phase2::before { background: var(--gold); }
+.le-phase3::before { background: var(--green); }
+.le-week {
+  font-family: var(--head);
+  font-size: 28px;
+  letter-spacing: 2px;
+  line-height: 1;
+}
+.le-week small {
+  display: block;
+  font-family: var(--mono);
+  font-size: 6px;
+  color: var(--t2);
+  letter-spacing: 0.12em;
+  margin-top: 2px;
+}
+.le-date {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  margin-top: 4px;
+  letter-spacing: 0.08em;
+}
+.le-body {}
+.le-note {
+  font-family: var(--mono);
+  font-size: 8px;
+  color: var(--t1);
+  line-height: 1.8;
+  letter-spacing: 0.02em;
+}
+.le-tags { display: flex; gap: 5px; margin-top: 6px; flex-wrap: wrap; }
+.le-tag {
+  font-family: var(--mono);
+  font-size: 6px;
+  padding: 2px 6px;
+  border-radius: 2px;
+  border: 1px solid var(--b3);
+  color: var(--t2);
+  letter-spacing: 0.08em;
+}
+.le-mood {
+  font-size: 16px;
+}
+
+/* ── ARSENAL TAB ── */
+.arsenal-grid {
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  border-bottom: 1px solid var(--b);
+}
+.tool-card {
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 3px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s;
+}
+.tool-card:hover { background: var(--s3); border-color: var(--b3); }
+.tool-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.tc-langchain::before { background: var(--cyan); }
+.tc-openai::before { background: linear-gradient(90deg,#10a37f,#1a7f64); }
+.tc-chroma::before { background: var(--purple); }
+.tc-crewai::before { background: var(--orange); }
+.tc-streamlit::before { background: #ff4b4b; }
+.tc-colab::before { background: var(--gold); }
+.tc-huggingface::before { background: #ff9d00; }
+.tc-github::before { background: var(--t2); }
+.tc-langraph::before { background: var(--green); }
+
+.tool-name {
+  font-family: var(--head);
+  font-size: 22px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.tool-type {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.12em;
+  margin-bottom: 10px;
+}
+.tool-bar-wrap {
+  height: 3px;
+  background: var(--b3);
+  border-radius: 2px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+.tool-bar { height: 100%; border-radius: 2px; transition: width 1s ease; }
+.tool-pct {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.08em;
+  display: flex;
+  justify-content: space-between;
+}
+.tool-pct span { color: var(--t1); font-weight: 700; }
+
+/* ── ROADMAP TAB ── */
+.roadmap-wrap { padding: 20px 24px; }
+.roadmap-phase {
+  margin-bottom: 32px;
+}
+.rp-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.rp-num {
+  font-family: var(--head);
+  font-size: 48px;
+  letter-spacing: 2px;
+  line-height: 1;
+  opacity: 0.3;
+}
+.rp-info {}
+.rp-phase-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  margin-bottom: 2px;
+}
+.rp-phase-title {
+  font-family: var(--head);
+  font-size: 28px;
+  letter-spacing: 2px;
+}
+.rp-weeks-label {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t2);
+  letter-spacing: 0.1em;
+}
+.rp-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+}
+.rp-week-card {
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 3px;
+  padding: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.rp-week-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.rp-wn { font-family: var(--mono); font-size: 7px; font-weight: 700; letter-spacing: 0.12em; margin-bottom: 6px; }
+.rp-wf { font-family: var(--head); font-size: 18px; letter-spacing: 1px; margin-bottom: 6px; }
+.rp-wd { font-family: var(--mono); font-size: 7px; color: var(--t2); line-height: 1.7; }
+.rp-del {
+  margin-top: 8px;
+  font-family: var(--mono);
+  font-size: 6px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 2px;
+  display: inline-block;
+  letter-spacing: 0.1em;
+}
+.rp-course {
+  margin-top: 6px;
+  font-family: var(--mono);
+  font-size: 6px;
+  color: var(--t3);
+  letter-spacing: 0.06em;
+  line-height: 1.5;
+}
+
+/* ── COURSES TAB ── */
+.courses-grid {
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1px;
+  background: var(--b);
+  border-bottom: 1px solid var(--b);
+}
+.course-platform {
+  background: var(--s1);
+  padding: 20px;
+}
+.cp-logo {
+  font-family: var(--head);
+  font-size: 24px;
+  letter-spacing: 2px;
+  margin-bottom: 4px;
+}
+.cp-badge {
+  font-family: var(--mono);
+  font-size: 6px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 2px;
+  display: inline-block;
+  margin-bottom: 14px;
+  letter-spacing: 0.1em;
+}
+.badge-access { background: var(--green2); color: var(--green); border: 1px solid rgba(46,204,113,0.3); }
+.badge-free { background: var(--cyan2); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+.cp-courses { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+.cp-course {
+  padding: 10px;
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 2px;
+}
+.cpc-title {
+  font-family: var(--mono);
+  font-size: 7px;
+  font-weight: 700;
+  color: var(--t1);
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+}
+.cpc-week {
+  font-family: var(--mono);
+  font-size: 6px;
+  color: var(--t2);
+  letter-spacing: 0.08em;
+}
+.cpc-status {
+  display: inline-block;
+  margin-top: 5px;
+  font-family: var(--mono);
+  font-size: 6px;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 2px;
+  letter-spacing: 0.08em;
+}
+
+/* ── OUTCOMES ── */
+.outcomes-grid {
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  border-bottom: 1px solid var(--b);
+}
+.outcome-card {
+  background: var(--s2);
+  border: 1px solid var(--b);
+  border-radius: 3px;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.outcome-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+}
+.oc-portfolio::before { background: var(--cyan); }
+.oc-skills::before { background: var(--gold); }
+.oc-content::before { background: var(--orange); }
+.oc-interview::before { background: var(--green); }
+.oc-icon { font-size: 20px; margin-bottom: 8px; }
+.oc-title { font-family: var(--head); font-size: 18px; letter-spacing: 1px; margin-bottom: 6px; }
+.oc-desc { font-family: var(--mono); font-size: 7px; color: var(--t2); line-height: 1.8; }
+.oc-num { font-family: var(--head); font-size: 36px; letter-spacing: 2px; }
+
+/* ── FOOTER ── */
+.footer {
+  padding: 16px 24px;
+  text-align: center;
+  border-top: 1px solid var(--b);
+  background: var(--s1);
+}
+.footer-txt {
+  font-family: var(--mono);
+  font-size: 7px;
+  color: var(--t3);
+  letter-spacing: 0.12em;
+}
+
+/* ── MODAL ── */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  z-index: 500;
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--s1);
+  border: 1px solid var(--b3);
+  border-radius: 4px;
+  width: 90%;
+  max-width: 560px;
+  max-height: 80vh;
+  overflow-y: auto;
+  position: relative;
+}
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--cyan), transparent);
+}
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--b);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.modal-title { font-family: var(--head); font-size: 24px; letter-spacing: 2px; color: var(--gold2); }
+.modal-close {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--t2);
+  cursor: pointer;
+  padding: 4px 8px;
+  border: 1px solid var(--b3);
+  border-radius: 2px;
+  transition: all 0.2s;
+}
+.modal-close:hover { color: var(--t1); border-color: var(--b3); }
+.modal-body { padding: 20px; }
+.modal-field { margin-bottom: 12px; }
+.modal-field label { display: block; font-family: var(--mono); font-size: 7px; color: var(--t2); letter-spacing: 0.12em; margin-bottom: 5px; }
+.modal-input, .modal-textarea {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--b3);
+  border-radius: 2px;
+  color: var(--t1);
+  font-family: var(--mono);
+  font-size: 8px;
+  padding: 8px 10px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.modal-input:focus, .modal-textarea:focus { border-color: rgba(212,168,67,0.5); }
+.modal-textarea { min-height: 80px; resize: vertical; }
+.modal-btn {
+  font-family: var(--mono);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  padding: 10px 20px;
+  background: var(--gold3);
+  border: 1px solid rgba(212,168,67,0.4);
+  color: var(--gold2);
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 4px;
+}
+.modal-btn:hover { background: rgba(212,168,67,0.25); }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+.panel.active { animation: fadeIn 0.3s ease; }
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .week-grid { grid-template-columns: repeat(2,1fr); }
+  .arsenal-grid { grid-template-columns: 1fr 1fr; }
+  .outcomes-grid { grid-template-columns: 1fr 1fr; }
+  .rp-grid { grid-template-columns: 1fr 1fr; }
+  .progress-overview { grid-template-columns: 1fr; }
+  .cw-body { grid-template-columns: 1fr; }
+  .courses-grid { grid-template-columns: 1fr; }
+}
+@media(max-width:600px){
+  .week-grid { grid-template-columns: 1fr; }
+  .hero-stats { flex-direction: column; width: 100%; }
+  .hero-stat { border-right: none; border-bottom: 1px solid var(--b3); }
+  .arsenal-grid { grid-template-columns: 1fr; }
+  .outcomes-grid { grid-template-columns: 1fr; }
+  .rp-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <div class="topbar-logo">GENAI WAR ROOM</div>
+    <div class="topbar-sep">·</div>
+    <div class="topbar-sub">AMIT PANDIT · DATA SCIENTIST → AI/ML ENGINEER · 12-WEEK SPRINT</div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-dot"></div>
+    <div class="status-label">ACTIVE</div>
+    <div class="overall-badge" id="overallBadge">WEEK 1 / 12</div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav">
+  <div class="nav-tab active" onclick="switchTab('overview')">◈ OVERVIEW</div>
+  <div class="nav-tab" onclick="switchTab('roadmap')">▲ ROADMAP</div>
+  <div class="nav-tab" onclick="switchTab('arsenal')">◎ ARSENAL</div>
+  <div class="nav-tab" onclick="switchTab('courses')">◆ COURSES</div>
+  <div class="nav-tab" onclick="switchTab('log')">▸ LOG</div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- OVERVIEW TAB -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel active" id="panel-overview">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow">◈ 12-WEEK GENAI LEARNING-BY-BUILDING PLAN · APR 2026</div>
+    <div class="hero-title"><span>GENAI</span> WAR ROOM</div>
+    <div class="hero-sub">AMIT PANDIT · DATA SCIENTIST → AI/ML ENGINEER · 5-6 HRS/WEEK · RETAIL-ANCHORED BUILDS</div>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="hero-stat-num c-gold" id="weeksComplete">0</div>
+        <div class="hero-stat-lbl">WEEKS DONE</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num c-cyan">12</div>
+        <div class="hero-stat-lbl">TOTAL WEEKS</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num c-green" id="projectsBuilt">0</div>
+        <div class="hero-stat-lbl">PROJECTS BUILT</div>
+      </div>
+      <div class="hero-stat">
+        <div class="hero-stat-num c-orange" id="logCount">0</div>
+        <div class="hero-stat-lbl">LOG ENTRIES</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHASE PROGRESS -->
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">◈ PHASE PROGRESS</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="progress-overview">
+    <div class="po-card phase1">
+      <div class="po-phase">PHASE 01</div>
+      <div class="po-phase-name">FOUNDATION</div>
+      <div class="po-weeks">WEEKS 1–4 · LLMs, Prompts, Embeddings, RAG</div>
+      <div class="po-bar-wrap"><div class="po-bar" id="p1bar" style="width:0%"></div></div>
+      <div class="po-pct" id="p1pct">0 / 4 weeks</div>
+    </div>
+    <div class="po-card phase2">
+      <div class="po-phase">PHASE 02</div>
+      <div class="po-phase-name">INTERMEDIATE</div>
+      <div class="po-weeks">WEEKS 5–8 · Chains, Agents, Multi-Agent, Evals</div>
+      <div class="po-bar-wrap"><div class="po-bar" id="p2bar" style="width:0%"></div></div>
+      <div class="po-pct" id="p2pct">0 / 4 weeks</div>
+    </div>
+    <div class="po-card phase3">
+      <div class="po-phase">PHASE 03</div>
+      <div class="po-phase-name">PORTFOLIO</div>
+      <div class="po-weeks">WEEKS 9–12 · UI, Capstone, System Design, Launch</div>
+      <div class="po-bar-wrap"><div class="po-bar" id="p3bar" style="width:0%"></div></div>
+      <div class="po-pct" id="p3pct">0 / 4 weeks</div>
+    </div>
+  </div>
+
+  <!-- CURRENT WEEK -->
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">▸ CURRENT WEEK</div>
+    <div class="sec-hdr-line"></div>
+    <button class="log-btn" style="font-size:7px;padding:5px 12px;" onclick="openModal()">+ LOG PROGRESS</button>
+  </div>
+  <div class="current-week">
+    <div class="cw-header">
+      <div class="cw-header-left">
+        <div class="cw-label">◈ ACTIVE MISSION</div>
+        <div class="cw-title" id="cwTitle">PYTHON FOR GENAI</div>
+      </div>
+      <div class="cw-badge" id="cwBadge">WEEK 1 · FOUNDATION</div>
+    </div>
+    <div class="cw-body">
+      <div class="cw-col">
+        <div class="cw-col-title">▸ BUILD THIS</div>
+        <div class="cw-col-body" id="cwBuild">
+          Set up LangChain environment. Build a simple prompt chain that takes <strong>campaign brief → generates audience description → outputs SQL-like logic.</strong>
+        </div>
+      </div>
+      <div class="cw-col">
+        <div class="cw-col-title">▸ COURSE</div>
+        <div class="cw-col-body" id="cwCourse">
+          <strong>DataCamp:</strong> Introduction to LLMs in Python
+        </div>
+        <div style="margin-top:12px">
+          <div class="cw-col-title">▸ DELIVERABLE</div>
+          <div class="cw-col-body" id="cwDel">GitHub repo + LinkedIn post</div>
+        </div>
+      </div>
+      <div class="cw-col">
+        <div class="cw-col-title">▸ THIS WEEK'S CHECKLIST</div>
+        <ul class="checklist" id="weekChecklist">
+          <li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>Install LangChain, OpenAI SDK, Python env</span></li>
+          <li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>Complete DataCamp module (1-2 hrs)</span></li>
+          <li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>Build prompt chain — brief → audience → SQL logic</span></li>
+          <li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>Push to GitHub with README</span></li>
+          <li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>Write LinkedIn post about Week 1 build</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- WEEK GRID -->
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">◆ ALL 12 WEEKS</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="week-grid" id="weekGrid">
+    <!-- Populated by JS -->
+  </div>
+
+  <!-- OUTCOMES -->
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">◈ EXPECTED OUTCOMES BY WEEK 12</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="outcomes-grid">
+    <div class="outcome-card oc-portfolio">
+      <div class="oc-num c-cyan">6-8</div>
+      <div class="oc-title">PROJECTS</div>
+      <div class="oc-desc">GenAI projects on GitHub including a deployed capstone Streamlit app</div>
+    </div>
+    <div class="outcome-card oc-skills">
+      <div class="oc-num c-gold">5+</div>
+      <div class="oc-title">CORE SKILLS</div>
+      <div class="oc-desc">LangChain, RAG, Vector DBs, Agents, Multi-Agent, AI System Design</div>
+    </div>
+    <div class="outcome-card oc-content">
+      <div class="oc-num c-orange">4-6</div>
+      <div class="oc-title">LI POSTS</div>
+      <div class="oc-desc">LinkedIn posts showcasing GenAI work, building credibility for AI roles</div>
+    </div>
+    <div class="outcome-card oc-interview">
+      <div class="oc-icon">🎯</div>
+      <div class="oc-title">INTERVIEW READY</div>
+      <div class="oc-desc">RAG vs fine-tuning, agent architectures, cost/latency — Swiggy-tier JD level</div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-txt">GENAI WAR ROOM · AMIT PANDIT · DATA SCIENTIST → AI/ML ENGINEER · BENGALURU · 2026</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ROADMAP TAB -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-roadmap">
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">▲ FULL 12-WEEK ROADMAP</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="roadmap-wrap" id="roadmapWrap">
+    <!-- Populated by JS -->
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- ARSENAL TAB -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-arsenal">
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">◎ TOOL ARSENAL</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="arsenal-grid">
+    <div class="tool-card tc-langchain">
+      <div class="tool-name c-cyan">LANGCHAIN</div>
+      <div class="tool-type">ORCHESTRATION FRAMEWORK</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:var(--cyan)" id="tb-lc"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-lc">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-openai">
+      <div class="tool-name" style="color:#10a37f">OPENAI API</div>
+      <div class="tool-type">LLM API · GPT-4o</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:#10a37f" id="tb-oai"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-oai">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-chroma">
+      <div class="tool-name" style="color:var(--purple)">CHROMADB</div>
+      <div class="tool-type">VECTOR DATABASE</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:var(--purple)" id="tb-chroma"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-chroma">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-crewai">
+      <div class="tool-name" style="color:var(--orange)">CREWAI</div>
+      <div class="tool-type">MULTI-AGENT FRAMEWORK</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:var(--orange)" id="tb-crew"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-crew">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-langraph">
+      <div class="tool-name" style="color:var(--green)">LANGGRAPH</div>
+      <div class="tool-type">AGENT STATE MACHINES</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:var(--green)" id="tb-lg"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-lg">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-streamlit">
+      <div class="tool-name" style="color:#ff4b4b">STREAMLIT</div>
+      <div class="tool-type">APP DEPLOYMENT</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:#ff4b4b" id="tb-st"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-st">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-colab">
+      <div class="tool-name" style="color:var(--gold2)">COLAB</div>
+      <div class="tool-type">DEVELOPMENT ENVIRONMENT</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:60%;background:var(--gold)" id="tb-colab"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-colab">60%</span></div>
+    </div>
+    <div class="tool-card tc-huggingface">
+      <div class="tool-name" style="color:#ff9d00">HUGGING FACE</div>
+      <div class="tool-type">MODEL HUB + SPACES</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:0%;background:#ff9d00" id="tb-hf"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-hf">NOT STARTED</span></div>
+    </div>
+    <div class="tool-card tc-github">
+      <div class="tool-name" style="color:var(--t1)">GITHUB</div>
+      <div class="tool-type">PORTFOLIO · VERSION CONTROL</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:55%;background:var(--t2)" id="tb-gh"></div></div>
+      <div class="tool-pct">Proficiency <span id="tp-gh">55%</span></div>
+    </div>
+  </div>
+
+  <div class="sec-hdr" style="margin-top:0">
+    <div class="sec-hdr-title">◈ ALREADY IN YOUR ARSENAL</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="arsenal-grid" style="border-top:none">
+    <div class="tool-card" style="border-color:rgba(46,204,113,0.2)">
+      <div class="tool-name" style="color:var(--green)">CLAUDE</div>
+      <div class="tool-type">AI PAIR PROGRAMMER · COMPLEX REASONING</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:92%;background:var(--green)"></div></div>
+      <div class="tool-pct">Proficiency <span>92%</span></div>
+    </div>
+    <div class="tool-card" style="border-color:rgba(0,212,255,0.2)">
+      <div class="tool-name" style="color:var(--cyan)">XGBOOST</div>
+      <div class="tool-type">ML · IPL WAR ROOM MODEL</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:80%;background:var(--cyan)"></div></div>
+      <div class="tool-pct">Proficiency <span>80%</span></div>
+    </div>
+    <div class="tool-card" style="border-color:rgba(212,168,67,0.2)">
+      <div class="tool-name" style="color:var(--gold2)">SQL</div>
+      <div class="tool-type">RETAIL ANALYTICS · LULU RETAIL</div>
+      <div class="tool-bar-wrap"><div class="tool-bar" style="width:85%;background:var(--gold)"></div></div>
+      <div class="tool-pct">Proficiency <span>85%</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- COURSES TAB -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-courses">
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">◆ COURSE PLAN</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div class="courses-grid">
+    <!-- DataCamp -->
+    <div class="course-platform">
+      <div class="cp-logo c-cyan">DATACAMP</div>
+      <div class="cp-badge badge-access">✓ YOU HAVE ACCESS</div>
+      <ul class="cp-courses">
+        <li class="cp-course">
+          <div class="cpc-title">Introduction to LLMs in Python</div>
+          <div class="cpc-week">Week 1 · Foundation</div>
+          <div class="cpc-status badge-active">→ START HERE</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">Working with Vector Databases</div>
+          <div class="cpc-week">Week 3 · Foundation</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">Developing LLM Apps with LangChain</div>
+          <div class="cpc-week">Week 5 · Intermediate</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">Multi-AI Agent Systems with CrewAI</div>
+          <div class="cpc-week">Week 7 · Intermediate</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">Building Chatbots with OpenAI + Streamlit</div>
+          <div class="cpc-week">Week 9 · Portfolio</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+      </ul>
+    </div>
+    <!-- Coursera -->
+    <div class="course-platform">
+      <div class="cp-logo c-gold">COURSERA</div>
+      <div class="cp-badge badge-access">✓ YOU HAVE ACCESS</div>
+      <ul class="cp-courses">
+        <li class="cp-course">
+          <div class="cpc-title">Prompt Engineering for ChatGPT (Vanderbilt)</div>
+          <div class="cpc-week">Week 2 · Foundation</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">Generative AI with LLMs (DeepLearning.AI + AWS)</div>
+          <div class="cpc-week">Week 4 · Foundation</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">AI Agents in LangGraph (DeepLearning.AI)</div>
+          <div class="cpc-week">Week 6 · Intermediate</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">Generative AI System Design (IBM)</div>
+          <div class="cpc-week">Week 11 · Portfolio</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+      </ul>
+    </div>
+    <!-- Free -->
+    <div class="course-platform">
+      <div class="cp-logo" style="color:var(--green)">FREE</div>
+      <div class="cp-badge badge-free">✓ FREE ACCESS</div>
+      <ul class="cp-courses">
+        <li class="cp-course">
+          <div class="cpc-title">Building + Evaluating Advanced RAG</div>
+          <div class="cpc-week">Week 8 · DeepLearning.AI Short Course</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">LangChain Documentation + Tutorials</div>
+          <div class="cpc-week">Ongoing reference · docs.langchain.com</div>
+          <div class="cpc-status" style="background:rgba(255,255,255,0.05);color:var(--t2);border:1px solid var(--b)">ALWAYS OPEN</div>
+        </li>
+        <li class="cp-course">
+          <div class="cpc-title">CrewAI + LangGraph GitHub Repos</div>
+          <div class="cpc-week">Weeks 6-7 · Source code & examples</div>
+          <div class="cpc-status badge-locked">LOCKED</div>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">◈ STRATEGY</div>
+    <div class="sec-hdr-line"></div>
+  </div>
+  <div style="padding:20px 24px; display:grid; grid-template-columns:1fr 1fr; gap:10px; border-bottom:1px solid var(--b)">
+    <div style="background:var(--s2);border:1px solid var(--b);border-radius:3px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--cyan)"></div>
+      <div style="font-family:var(--mono);font-size:7px;font-weight:700;color:var(--cyan);letter-spacing:0.18em;margin-bottom:8px">ANCHOR TO RETAIL</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--t1);line-height:1.9">Use Lulu-style data and e-commerce scenarios. Every project is a resume bullet, not just a learning exercise. Campaign analytics = your existing domain expertise.</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b);border-radius:3px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--gold)"></div>
+      <div style="font-family:var(--mono);font-size:7px;font-weight:700;color:var(--gold2);letter-spacing:0.18em;margin-bottom:8px">SHIP WEEKLY</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--t1);line-height:1.9">GitHub: <strong style="color:var(--gold2)">genai-portfolio</strong> repo. Each week = one folder with README, code, screenshot. Recruiters check GitHub. Don't chase perfection — chase momentum.</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b);border-radius:3px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--orange)"></div>
+      <div style="font-family:var(--mono);font-size:7px;font-weight:700;color:var(--orange);letter-spacing:0.18em;margin-bottom:8px">POST AS YOU BUILD</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--t1);line-height:1.9">Every 2 weeks → LinkedIn post. Insight-first, then walkthrough, end with a question. Builds your GenAI brand in real-time. Links in first comment always.</div>
+    </div>
+    <div style="background:var(--s2);border:1px solid var(--b);border-radius:3px;padding:16px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green)"></div>
+      <div style="font-family:var(--mono);font-size:7px;font-weight:700;color:var(--green);letter-spacing:0.18em;margin-bottom:8px">AI AS SPARRING PARTNER</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--t1);line-height:1.9">Use Claude/ChatGPT as pair programmer when stuck on syntax. The skill is knowing <strong style="color:var(--green)">what to build and why</strong> — not memorizing API docs. That's your edge.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- LOG TAB -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-log">
+  <div class="sec-hdr">
+    <div class="sec-hdr-title">▸ PROGRESS LOG</div>
+    <div class="sec-hdr-line"></div>
+    <button class="log-btn" style="font-size:7px;padding:5px 12px;" onclick="openModal()">+ ADD ENTRY</button>
+  </div>
+  <div class="log-wrap">
+    <!-- SETUP BANNER — remove once Apps Script is deployed -->
+    <div id="setupBanner" style="background:rgba(212,168,67,0.07);border:1px solid rgba(212,168,67,0.25);border-radius:3px;padding:16px 20px;margin-bottom:20px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gold),transparent)"></div>
+      <div style="font-family:var(--mono);font-size:7px;font-weight:700;color:var(--gold2);letter-spacing:0.2em;margin-bottom:10px">◈ ONE-TIME SETUP — CONNECT GOOGLE SHEETS</div>
+      <div style="font-family:var(--mono);font-size:8px;color:var(--t1);line-height:2">
+        <strong style="color:var(--gold2)">Step 1</strong> — Open your Playbook sheet: 
+        <a href="https://docs.google.com/spreadsheets/d/1xomNKjHUbIcLRZE5hqPWEIlL9NY0AOXl5lB7KEZO1SI" target="_blank" style="color:var(--cyan)">Open Sheet ↗</a><br>
+        <strong style="color:var(--gold2)">Step 2</strong> — Add a new tab named exactly: <span style="color:var(--green);background:rgba(46,204,113,0.1);padding:1px 6px;border-radius:2px">GenAI Log</span><br>
+        <strong style="color:var(--gold2)">Step 3</strong> — In row 1 of that tab, add these headers: <span style="color:var(--t2)">Date | Week | Phase | Focus Area | Status | Mood | Notes | GitHub Link</span><br>
+        <strong style="color:var(--gold2)">Step 4</strong> — Go to <span style="color:var(--t2)">Extensions → Apps Script</span> in the sheet, paste the script below, deploy as Web App (Anyone access)<br>
+        <strong style="color:var(--gold2)">Step 5</strong> — Paste the Web App URL into the <span style="color:var(--gold2)">APPS_SCRIPT_URL</span> variable at the top of this file's JS
+      </div>
+      <div style="margin-top:12px;background:var(--s1);border:1px solid var(--b3);border-radius:2px;padding:12px;font-family:var(--mono);font-size:7px;color:var(--t2);line-height:2;white-space:pre-wrap">function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  if (data.action !== 'appendLog') return;
+  const ss = SpreadsheetApp.openById('1xomNKjHUbIcLRZE5hqPWEIlL9NY0AOXl5lB7KEZO1SI');
+  const sheet = ss.getSheetByName('GenAI Log');
+  const d = data.data;
+  sheet.appendRow([d.date, d.week, d.phase, d.focus, d.status, d.mood, d.notes, d.github_link]);
+  return ContentService.createTextOutput(JSON.stringify({status:'ok'})).setMimeType(ContentService.MimeType.JSON);
+}</div>
+      <button onclick="document.getElementById('setupBanner').style.display='none'" style="margin-top:10px;font-family:var(--mono);font-size:7px;padding:4px 10px;background:transparent;border:1px solid var(--b3);color:var(--t3);border-radius:2px;cursor:pointer;letter-spacing:0.08em">✕ DISMISS</button>
+    </div>
+    <div class="log-entries" id="logEntries">
+      <div style="text-align:center;padding:40px;font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:0.12em">
+        NO ENTRIES YET · START LOGGING FROM TOMORROW ◈
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- LOG MODAL -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">LOG ENTRY</div>
+      <div class="modal-close" onclick="closeModal()">✕ CLOSE</div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-field">
+        <label>WEEK NUMBER</label>
+        <select class="modal-input" id="logWeek">
+          <option value="1">Week 1 — Python for GenAI</option>
+          <option value="2">Week 2 — Prompt Engineering</option>
+          <option value="3">Week 3 — Embeddings & Vector DBs</option>
+          <option value="4">Week 4 — RAG Pipeline v1</option>
+          <option value="5">Week 5 — LangChain Deep Dive</option>
+          <option value="6">Week 6 — Agents & Tools</option>
+          <option value="7">Week 7 — Multi-Agent Systems</option>
+          <option value="8">Week 8 — Evaluation & Guardrails</option>
+          <option value="9">Week 9 — Streamlit / Gradio UI</option>
+          <option value="10">Week 10 — End-to-End Capstone</option>
+          <option value="11">Week 11 — System Design for AI</option>
+          <option value="12">Week 12 — Interview Prep & Content</option>
+        </select>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="modal-field">
+          <label>STATUS</label>
+          <select class="modal-input" id="logStatus">
+            <option value="in-progress">In Progress</option>
+            <option value="done">Completed ✓</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
+        <div class="modal-field">
+          <label>MOOD</label>
+          <select class="modal-input" id="logMood">
+            <option value="🔥">🔥 On Fire</option>
+            <option value="✅">✅ Solid</option>
+            <option value="😐">😐 Okay</option>
+            <option value="😵">😵 Struggling</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>WHAT DID YOU BUILD / LEARN?</label>
+        <textarea class="modal-textarea" id="logNote" placeholder="Describe what you built, key learnings, blockers..."></textarea>
+      </div>
+      <div class="modal-field">
+        <label>GITHUB LINK (optional)</label>
+        <input class="modal-input" id="logGithub" type="text" placeholder="github.com/amit0257/genai-portfolio/...">
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <button class="modal-btn" onclick="saveLog()">◈ SAVE LOG ENTRY</button>
+        <span id="syncStatus" style="font-family:var(--mono);font-size:7px;letter-spacing:0.1em;transition:color 0.3s"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────
+const WEEKS = [
+  { w:1, phase:1, focus:"PYTHON FOR GENAI", build:"Set up LangChain env. Build a prompt chain: campaign brief → audience description → SQL-like logic.", course:"DataCamp: Introduction to LLMs in Python", del:"GitHub repo + LinkedIn post", checklist:["Install LangChain, OpenAI SDK, Python env","Complete DataCamp module (1-2 hrs)","Build prompt chain — brief → audience → SQL logic","Push to GitHub with README","Write LinkedIn post about Week 1 build"] },
+  { w:2, phase:1, focus:"PROMPT ENGINEERING", build:"Build a retail prompt library: product description generator, customer query classifier, campaign copy writer. Test with OpenAI / Claude APIs.", course:"Coursera: Prompt Engineering for ChatGPT (Vanderbilt)", del:"Prompt library repo", checklist:["Start Coursera module","Build product description generator prompt","Build customer query classifier","Build campaign copy writer","Test all 3 with real retail data","Add to GitHub prompt library folder"] },
+  { w:3, phase:1, focus:"EMBEDDINGS & VECTORS", build:"Embed Lulu product catalog (or sample retail data) into ChromaDB. Build semantic search: 'find products similar to X' with cosine similarity.", course:"DataCamp: Working with Vector Databases", del:"Semantic search demo", checklist:["Complete DataCamp Vector DBs module","Set up ChromaDB locally","Embed sample retail product catalog","Build semantic search function","Test with 5+ sample queries","Screenshot demo for LinkedIn"] },
+  { w:4, phase:1, focus:"RAG PIPELINE V1", build:"Build end-to-end RAG: load retail PDF docs (return policies, product specs) → chunk → embed → retrieve → generate answers using LangChain.", course:"Coursera: Generative AI with LLMs (DeepLearning.AI)", del:"Working RAG app", checklist:["Complete Coursera GenAI with LLMs module","Set up document ingestion pipeline","Implement chunking strategy","Build retrieval + generation chain","Test with retail policy questions","Deploy or demo-ready notebook"] },
+  { w:5, phase:2, focus:"LANGCHAIN DEEP DIVE", build:"Build a multi-step chain: customer query → intent classification → route to (a) product search, (b) order status, or (c) FAQ RAG. Add memory for conversation context.", course:"DataCamp: Developing LLM Apps with LangChain", del:"Multi-chain bot", checklist:["Complete DataCamp LangChain module","Build intent classifier chain","Build routing logic (3 paths)","Add ConversationBufferMemory","Test multi-turn conversations","Push complete bot to GitHub"] },
+  { w:6, phase:2, focus:"AGENTS & TOOLS", build:"Build a retail analytics agent that can: query a SQL database, generate charts, summarize findings. Use LangChain agents with custom tools (SQL tool, plotting tool).", course:"Coursera: AI Agents in LangGraph (DeepLearning.AI)", del:"Analytics agent", checklist:["Complete LangGraph course module","Build custom SQL tool","Build custom plotting tool","Wire agent with both tools","Test end-to-end: query → chart → summary","Document agent architecture"] },
+  { w:7, phase:2, focus:"MULTI-AGENT SYSTEMS", build:"Build a 2-agent campaign system: Agent 1 (Analyst) queries data + identifies segments. Agent 2 (Strategist) generates campaign recommendations. Use CrewAI or LangGraph.", course:"DataCamp: Multi-AI Agent Systems with CrewAI", del:"Multi-agent demo", checklist:["Complete CrewAI DataCamp module","Define Analyst agent + tools","Define Strategist agent + tools","Wire agent handoff","Test with retail campaign scenario","Write LinkedIn post: analyst builds this in 2026"] },
+  { w:8, phase:2, focus:"EVALUATION & GUARDRAILS", build:"Add evaluation to your RAG pipeline: measure retrieval accuracy, answer relevance, hallucination rate. Add input/output guardrails (toxicity filter, PII detection).", course:"DeepLearning.AI: Building and Evaluating Advanced RAG (free)", del:"Eval dashboard", checklist:["Complete DeepLearning.AI RAG eval course","Implement retrieval accuracy metric","Implement answer relevance metric","Add hallucination detection","Add input guardrails","Build simple eval dashboard"] },
+  { w:9, phase:3, focus:"STREAMLIT UI", build:"Wrap your best project (RAG or multi-agent) in a Streamlit UI. Deploy to Streamlit Cloud or HuggingFace Spaces. Make it demo-ready.", course:"DataCamp: Building Chatbots with OpenAI + Streamlit", del:"Live deployed app", checklist:["Complete DataCamp Streamlit course","Choose best project to wrap","Build Streamlit UI","Deploy to Streamlit Cloud","Add demo instructions to README","Share link on LinkedIn"] },
+  { w:10, phase:3, focus:"CAPSTONE PROJECT", build:"Build 'AI-Powered Retail Campaign Assistant': takes business objective → queries customer data → identifies audience → generates campaign brief → estimates ROI.", course:"Self-directed (consolidation week)", del:"Capstone project", checklist:["Define capstone scope + tech stack","Build data querying component","Build audience identification logic","Build campaign brief generator","Add ROI estimation","Make it fully demo-able"] },
+  { w:11, phase:3, focus:"SYSTEM DESIGN FOR AI", build:"Document system architecture for your capstone: data flow, latency considerations, cost estimation, scaling strategy. Practice explaining build-vs-buy decisions.", course:"Coursera: Generative AI System Design (IBM)", del:"Architecture doc", checklist:["Complete IBM System Design course","Draw architecture diagram","Document data flow","Calculate cost estimation","Write build-vs-buy analysis","Practice explaining to non-technical stakeholders"] },
+  { w:12, phase:3, focus:"INTERVIEW PREP", build:"Write 3 LinkedIn posts showcasing projects. Prepare case study walkthrough. Practice explaining trade-offs: open-source vs proprietary, RAG vs fine-tuning, single vs multi-agent.", course:"Review + mock interviews", del:"Portfolio site / 3 posts", checklist:["Write LinkedIn post 1 (RAG project)","Write LinkedIn post 2 (multi-agent)","Write LinkedIn post 3 (capstone)","Record yourself walking through a project","Practice: RAG vs fine-tuning trade-offs","Practice: single vs multi-agent decision","Apply to 3 target roles"] },
+];
+
+const phaseColors = ['','#00d4ff','#d4a843','#2ecc71'];
+const phaseNames = ['','FOUNDATION','INTERMEDIATE','PORTFOLIO'];
+
+// ── STATE ─────────────────────────────────────────
+let state = JSON.parse(localStorage.getItem('genai_warroom') || 'null') || {
+  weekStatus: {}, // weekNum -> 'done'|'active'|'locked'
+  logs: [],
+  checklist: {},  // weekNum -> [bool...]
+  currentWeek: 1
+};
+
+// ── GOOGLE SHEETS CONFIG ──────────────────────────
+const SHEET_ID = '1xomNKjHUbIcLRZE5hqPWEIlL9NY0AOXl5lB7KEZO1SI';
+const SHEET_TAB = 'GenAI Log';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby3b1kJMzc1_fMydd0nVqPPubM8GhIboRCrzlYp-YiqZfSZXiuBh-Sn9Yj6J_dMlwhwLQ/exec';
+
+// ── SAVE / LOAD ───────────────────────────────────
+function save() {
+  localStorage.setItem('genai_warroom', JSON.stringify(state));
+}
+
+// ── TAB SWITCHING ─────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  const tabs = ['overview','roadmap','arsenal','courses','log'];
+  document.querySelectorAll('.nav-tab')[tabs.indexOf(tab)].classList.add('active');
+}
+
+// ── TOGGLE CHECKLIST ITEM ─────────────────────────
+function toggleCheck(li) {
+  li.classList.toggle('checked');
+  save();
+}
+
+// ── MODAL ─────────────────────────────────────────
+function openModal() {
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function closeModalOutside(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+async function saveLog() {
+  const week = parseInt(document.getElementById('logWeek').value);
+  const status = document.getElementById('logStatus').value;
+  const mood = document.getElementById('logMood').value;
+  const note = document.getElementById('logNote').value.trim();
+  const github = document.getElementById('logGithub').value.trim();
+  if (!note) { alert('Please add a note.'); return; }
+
+  const wkData = WEEKS.find(w => w.w === week);
+  const phase = wkData ? wkData.phase : 1;
+  const date = new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short', year:'numeric'});
+
+  const entry = { week, status, mood, note, github, date, phase, focus: wkData ? wkData.focus : '', ts: Date.now() };
+
+  // Save locally first
+  state.logs.unshift(entry);
+  if (status === 'done') state.weekStatus[week] = 'done';
+  save();
+  renderLog();
+  updateStats();
+  closeModal();
+  document.getElementById('logNote').value = '';
+  document.getElementById('logGithub').value = '';
+
+  // Sync to Google Sheets
+  if (APPS_SCRIPT_URL) {
+    setSyncStatus('syncing');
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'appendLog',
+          data: {
+            date,
+            week: `Week ${week}`,
+            phase: `Phase ${phase} — ${['','Foundation','Intermediate','Portfolio'][phase]}`,
+            focus: wkData ? wkData.focus : '',
+            status: status === 'done' ? '✓ Completed' : status === 'in-progress' ? '▸ In Progress' : '⚠ Blocked',
+            mood,
+            notes: note,
+            github_link: github || '—'
+          }
+        })
+      });
+      setSyncStatus('synced');
+    } catch(e) {
+      setSyncStatus('error');
+      console.error('Sheets sync failed:', e);
+    }
+  } else {
+    setSyncStatus('no-script');
+  }
+}
+
+function setSyncStatus(s) {
+  const el = document.getElementById('syncStatus');
+  if (!el) return;
+  const map = {
+    syncing: ['⟳ SYNCING TO SHEETS...', 'var(--gold2)'],
+    synced:  ['✓ SYNCED TO SHEETS', 'var(--green)'],
+    error:   ['⚠ SYNC FAILED — SAVED LOCALLY', 'var(--orange)'],
+    'no-script': ['◌ LOCAL ONLY — DEPLOY APPS SCRIPT TO SYNC', 'var(--t3)']
+  };
+  const [txt, col] = map[s] || ['',''];
+  el.textContent = txt;
+  el.style.color = col;
+  if (s === 'synced') setTimeout(() => { el.textContent = ''; }, 4000);
+}
+
+// ── RENDER WEEK GRID ──────────────────────────────
+function renderWeekGrid() {
+  const grid = document.getElementById('weekGrid');
+  grid.innerHTML = '';
+  WEEKS.forEach(wk => {
+    const status = state.weekStatus[wk.w] || (wk.w === state.currentWeek ? 'active' : 'locked');
+    const phaseClass = 'wk-phase' + wk.phase;
+    const statusClass = status === 'done' ? 'status-done' : status === 'active' ? 'status-active' : '';
+    const badgeClass = status === 'done' ? 'badge-done' : status === 'active' ? 'badge-active' : wk.w === state.currentWeek + 1 ? 'badge-ready' : 'badge-locked';
+    const badgeText = status === 'done' ? '✓ DONE' : status === 'active' ? '▸ ACTIVE' : wk.w === state.currentWeek + 1 ? 'READY' : '◌ LOCKED';
+    const delClass = 'del-phase' + wk.phase;
+    const div = document.createElement('div');
+    div.className = `week-card ${phaseClass} ${statusClass}`;
+    div.innerHTML = `
+      <div class="wk-num" style="color:${phaseColors[wk.phase]}">
+        WK ${String(wk.w).padStart(2,'0')} · P${wk.phase}
+        <span class="wk-status-badge ${badgeClass}">${badgeText}</span>
+      </div>
+      <div class="wk-focus" style="color:${status === 'locked' ? 'var(--t2)' : 'var(--t1)'}">${wk.focus}</div>
+      <div class="wk-build">${wk.build.substring(0,90)}...</div>
+      <div class="wk-deliverable ${delClass}">${wk.del}</div>
+    `;
+    div.onclick = () => jumpToWeek(wk.w);
+    grid.appendChild(div);
+  });
+}
+
+// ── RENDER ROADMAP ────────────────────────────────
+function renderRoadmap() {
+  const wrap = document.getElementById('roadmapWrap');
+  wrap.innerHTML = '';
+  [1,2,3].forEach(phase => {
+    const phaseWeeks = WEEKS.filter(w => w.phase === phase);
+    const div = document.createElement('div');
+    div.className = 'roadmap-phase';
+    const color = phaseColors[phase];
+    div.innerHTML = `
+      <div class="rp-header">
+        <div class="rp-num" style="color:${color}">0${phase}</div>
+        <div class="rp-info">
+          <div class="rp-phase-label" style="color:${color}">PHASE ${String(phase).padStart(2,'0')}</div>
+          <div class="rp-phase-title" style="color:${color}">${phaseNames[phase]}</div>
+          <div class="rp-weeks-label">WEEKS ${(phase-1)*4+1}–${phase*4}</div>
+        </div>
+      </div>
+      <div class="rp-grid">
+        ${phaseWeeks.map(wk => `
+          <div class="rp-week-card" style="border-color:${state.weekStatus[wk.w] === 'done' ? color+'66' : 'var(--b)'}">
+            <div style="position:absolute;top:0;left:0;right:0;height:2px;background:${state.weekStatus[wk.w] === 'done' ? color : 'transparent'}"></div>
+            <div class="rp-wn" style="color:${color}">WK ${String(wk.w).padStart(2,'0')}</div>
+            <div class="rp-wf" style="color:${state.weekStatus[wk.w] === 'done' ? color : 'var(--t1)'}">${wk.focus}</div>
+            <div class="rp-wd">${wk.build}</div>
+            <div class="rp-del" style="background:${color}18;color:${color};border:1px solid ${color}44">${wk.del}</div>
+            <div class="rp-course">📚 ${wk.course}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+// ── RENDER LOG ────────────────────────────────────
+function renderLog() {
+  const el = document.getElementById('logEntries');
+  if (!state.logs.length) {
+    el.innerHTML = `<div style="text-align:center;padding:40px;font-family:var(--mono);font-size:8px;color:var(--t3);letter-spacing:0.12em">NO ENTRIES YET · START LOGGING FROM TOMORROW ◈</div>`;
+    return;
+  }
+  el.innerHTML = state.logs.map(e => {
+    const wkData = WEEKS.find(w => w.w === e.week);
+    const phase = wkData ? wkData.phase : 1;
+    const color = phaseColors[phase];
+    return `
+      <div class="log-entry le-phase${phase}">
+        <div>
+          <div class="le-week" style="color:${color}">W${String(e.week).padStart(2,'0')}<small>${phaseNames[phase]}</small></div>
+          <div class="le-date">${e.date}</div>
+          <div style="font-size:18px;margin-top:6px">${e.mood}</div>
+        </div>
+        <div class="le-body">
+          <div class="le-note">${e.note}</div>
+          ${e.github ? `<div class="le-tags"><span class="le-tag" style="color:var(--cyan);border-color:rgba(0,212,255,0.3)">⌥ ${e.github}</span></div>` : ''}
+          <div class="le-tags">
+            <span class="le-tag">${e.status === 'done' ? '✓ COMPLETED' : e.status === 'in-progress' ? '▸ IN PROGRESS' : '⚠ BLOCKED'}</span>
+            <span class="le-tag">${wkData ? wkData.focus : ''}</span>
+          </div>
+        </div>
+        <div style="font-family:var(--mono);font-size:7px;color:var(--t3);white-space:nowrap;letter-spacing:0.06em">${e.date}</div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── UPDATE STATS ──────────────────────────────────
+function updateStats() {
+  const done = Object.values(state.weekStatus).filter(s => s === 'done').length;
+  document.getElementById('weeksComplete').textContent = done;
+  document.getElementById('projectsBuilt').textContent = done; // 1 project per week
+  document.getElementById('logCount').textContent = state.logs.length;
+  document.getElementById('overallBadge').textContent = `WEEK ${state.currentWeek} / 12`;
+
+  // Phase progress
+  const p1done = WEEKS.filter(w => w.phase===1 && state.weekStatus[w.w]==='done').length;
+  const p2done = WEEKS.filter(w => w.phase===2 && state.weekStatus[w.w]==='done').length;
+  const p3done = WEEKS.filter(w => w.phase===3 && state.weekStatus[w.w]==='done').length;
+  document.getElementById('p1bar').style.width = (p1done/4*100) + '%';
+  document.getElementById('p2bar').style.width = (p2done/4*100) + '%';
+  document.getElementById('p3bar').style.width = (p3done/4*100) + '%';
+  document.getElementById('p1pct').textContent = `${p1done} / 4 weeks`;
+  document.getElementById('p2pct').textContent = `${p2done} / 4 weeks`;
+  document.getElementById('p3pct').textContent = `${p3done} / 4 weeks`;
+}
+
+// ── JUMP TO WEEK ──────────────────────────────────
+function jumpToWeek(wNum) {
+  state.currentWeek = wNum;
+  const wk = WEEKS.find(w => w.w === wNum);
+  document.getElementById('cwTitle').textContent = wk.focus;
+  document.getElementById('cwBadge').textContent = `WEEK ${wNum} · ${phaseNames[wk.phase]}`;
+  document.getElementById('cwBuild').innerHTML = wk.build;
+  document.getElementById('cwCourse').innerHTML = `<strong>${wk.course.split(':')[0]}:</strong>${wk.course.split(':').slice(1).join(':')}`;
+  document.getElementById('cwDel').textContent = wk.del;
+  const cl = document.getElementById('weekChecklist');
+  cl.innerHTML = wk.checklist.map(item => `
+    <li onclick="toggleCheck(this)"><div class="check-box">✓</div><span>${item}</span></li>
+  `).join('');
+  save();
+  renderWeekGrid();
+  updateStats();
+  switchTab('overview');
+  window.scrollTo({top: 0, behavior: 'smooth'});
+}
+
+// ── INIT ──────────────────────────────────────────
+renderWeekGrid();
+renderRoadmap();
+renderLog();
+updateStats();
+</script>
+</body>
+</html>
